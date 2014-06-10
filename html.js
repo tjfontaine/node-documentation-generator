@@ -25,15 +25,17 @@ var path = require('path');
 
 module.exports = toHTML;
 
-function toHTML(input, filename, template, cb) {
+function toHTML(input, filename, template, config, cb) {
   var lexed = marked.lexer(input);
-  fs.readFile(template, 'utf8', function(er, template) {
+  var tempFile = config.template || template;
+  console.error('using template', tempFile);
+  fs.readFile(config.template || template, 'utf8', function(er, template) {
     if (er) return cb(er);
-    render(lexed, filename, template, cb);
+    render(lexed, filename, template, config, cb);
   });
 }
 
-function render(lexed, filename, template, cb) {
+function render(lexed, filename, template, config, cb) {
   // get the section
   var section = getSection(lexed);
 
@@ -50,6 +52,7 @@ function render(lexed, filename, template, cb) {
     template = template.replace(/__SECTION__/g, section);
     template = template.replace(/__VERSION__/g, process.version);
     template = template.replace(/__TOC__/g, toc);
+    template = template.replace(/__TITLE__/g, config.title || '');
 
     // content has to be the last thing we do with
     // the lexed tokens, because it's destructive.
@@ -122,9 +125,15 @@ function parseLists(input) {
 
 
 function parseListItem(text) {
-  text = text.replace(/\{([^\}]+)\}/, '<span class="type">$1</span>');
+  var parts = text.split('`');
+  var i;
+
+  for (i = 0; i < parts.length; i += 2) {
+    parts[i] = parts[i].replace(/\{([^\}]+)\}/, '<span class="type">$1</span>');
+  }
+
   //XXX maybe put more stuff here?
-  return text;
+  return parts.join('`');
 }
 
 function parseAPIHeader(text) {
