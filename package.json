@@ -3,18 +3,21 @@
   "name": "node-doc-generator",
   "description": "Internal tool for generating Node.js API docs",
   "version": "1.0.0",
-  "engines": {
-    "node": ">=0.6.10"
-  },
   "scripts": {
     "test": "lab -v"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joyent/node-documentation-generator"
   },
   "dependencies": {
     "marked": "~0.1.9"
   },
+  "bundleDependencies": [
+    "marked"
+  ],
   "devDependencies": {
     "lab": "~5.2.1"
   },
-  "optionalDependencies": {},
   "bin": "./generate.js"
 }
